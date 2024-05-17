@@ -16,6 +16,7 @@ RUN apt-get update \
     && apt install -y libgtsam-dev libgtsam-unstable-dev \
     && apt-get install -y dbus-x11 \
     && apt-get install nano \
+    && apt-get install openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
 SHELL ["/bin/bash", "-c"]
