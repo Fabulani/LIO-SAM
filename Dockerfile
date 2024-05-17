@@ -14,18 +14,23 @@ RUN apt-get update \
     && add-apt-repository -y ppa:borglab/gtsam-release-4.0 \
     && apt-get update \
     && apt install -y libgtsam-dev libgtsam-unstable-dev \
+    && apt-get install -y dbus-x11 \
+    && apt-get install nano \
     && rm -rf /var/lib/apt/lists/*
 
 SHELL ["/bin/bash", "-c"]
 
-RUN mkdir -p ~/catkin_ws/src \
-    && cd ~/catkin_ws/src \
-    && git clone https://github.com/TixiaoShan/LIO-SAM.git \
+RUN mkdir -p /catkin_ws/src \
+    && cd /catkin_ws/src \
+    && git clone https://github.com/Fabulani/LIO-SAM.git \
     && cd .. \
     && source /opt/ros/kinetic/setup.bash \
     && catkin_make
 
-RUN echo "source /opt/ros/kinetic/setup.bash" >> /root/.bashrc \
-    && echo "source /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
+# Fix dbus and machine uuid error when starting rviz
+RUN service dbus start
 
-WORKDIR /root/catkin_ws
+RUN echo "source /opt/ros/kinetic/setup.bash" >> /root/.bashrc \
+    && echo "source /catkin_ws/devel/setup.bash" >> /root/.bashrc
+
+WORKDIR /catkin_ws
