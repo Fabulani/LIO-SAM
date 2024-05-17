@@ -145,6 +145,12 @@ The user needs to prepare the point cloud data in the correct format for cloud d
 
 ## Run the package
 
+0. rviz waiting for master error fix (plus others):
+
+```
+roscore
+```
+
 1. Run the launch file:
 
 ```
@@ -157,7 +163,12 @@ roslaunch lio_sam run.launch
 rosbag play your-bag.bag -r 3
 ```
 
+For rooftop dataset, `-r 3` doesn't work on the algorithm.
+
 ## Other notes
+
+- **params.yaml:** change it inside `catkin_ws/src` instead of the project file, otherwise the values are not updated.
+- TODO: try mounting the devcontainer on top of the catkin_ws/src
 
 - **Loop closure:** The loop function here gives an example of proof of concept. It is directly adapted from LeGO-LOAM loop closure. For more advanced loop closure implementation, please refer to [ScanContext](https://github.com/irapkaist/SC-LeGO-LOAM). Set the "loopClosureEnableFlag" in "params.yaml" to "true" to test the loop closure function. In Rviz, uncheck "Map (cloud)" and check "Map (global)". This is because the visualized map - "Map (cloud)" - is simply a stack of point clouds in Rviz. Their postion will not be updated after pose correction. The loop closure function here is simply adapted from LeGO-LOAM, which is an ICP-based method. Because ICP runs pretty slow, it is suggested that the playback speed is set to be "-r 1". You can try the Garden dataset for testing.
 
