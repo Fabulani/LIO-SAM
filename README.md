@@ -1,3 +1,12 @@
+# Fabiano's comments and notes
+
+## Changing params and launch files
+
+1. Change the files (recommended to have one params/launch pair for each dataset bag)
+2. `colcon build` at `/root/ros2_ws`, then `source install/setup.bash`
+3. ???
+4. profit
+
 # LIO-SAM
 
 **A real-time lidar-inertial odometry package. We strongly recommend the users read this document thoroughly and test the package with the provided dataset first. A video of the demonstration of the method can be found on [YouTube](https://www.youtube.com/watch?v=A0H8CoORZJU).**
@@ -187,6 +196,9 @@ ros2 service call /lio_sam/save_map lio_sam/srv/SaveMap
 ```
 ```
 ros2 service call /lio_sam/save_map lio_sam/srv/SaveMap "{resolution: 0.2, destination: /Downloads/service_LOAM}"
+```
+```
+ros2 service call /lio_sam/save_map lio_sam/srv/SaveMap "{resolution: 0.2, destination: /ros2_ws/src/LIO-SAM/data/downloads/datasetname}"
 ```
 ## Other notes
 
