@@ -5,13 +5,13 @@ RUN apt-get update \
     && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
     && apt-get update \
     && apt install -y python3-colcon-common-extensions \
-    && apt-get install -y ros-humble-navigation2 \
-    && apt-get install -y ros-humble-robot-localization \
-    && apt-get install -y ros-humble-robot-state-publisher \
-    && apt install -y ros-humble-perception-pcl \
-  	&& apt install -y ros-humble-pcl-msgs \
-  	&& apt install -y ros-humble-vision-opencv \
-  	&& apt install -y ros-humble-xacro \
+    && apt-get install -y ros-${ROS_DISTRO}-navigation2 \
+    && apt-get install -y ros-${ROS_DISTRO}-robot-localization \
+    && apt-get install -y ros-${ROS_DISTRO}-robot-state-publisher \
+    && apt install -y ros-${ROS_DISTRO}-perception-pcl \
+  	&& apt install -y ros-${ROS_DISTRO}-pcl-msgs \
+  	&& apt install -y ros-${ROS_DISTRO}-vision-opencv \
+  	&& apt install -y ros-${ROS_DISTRO}-xacro \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
@@ -25,12 +25,12 @@ SHELL ["/bin/bash", "-c"]
 
 RUN mkdir -p ~/ros2_ws/src \
     && cd ~/ros2_ws/src \
-    && git clone --branch ros2 https://github.com/TixiaoShan/LIO-SAM.git \
+    && git clone --branch ros2-dev https://github.com/Fabulani/LIO-SAM.git \
     && cd .. \
-    && source /opt/ros/humble/setup.bash \
+    && source /opt/ros/${ROS_DISTRO}/setup.bash \
     && colcon build
 
-RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc \
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /root/.bashrc \
     && echo "source /root/ros2_ws/install/setup.bash" >> /root/.bashrc
 
 WORKDIR /root/ros2_ws
