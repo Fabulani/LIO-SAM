@@ -4,7 +4,7 @@
     # Topics
     pointCloudTopic: "/ouster/points"                   # Point cloud data
     imuTopic: "/imu/data"                        # IMU data
-    odomTopic: "odom"                    # IMU pre-preintegration odometry, same frequency as IMU
+    odomTopic: "/odom"                    # IMU pre-preintegration odometry, same frequency as IMU
     gpsTopic: "odometry/gpsz"                    # GPS odometry topic from navsat, see module_navsat.launch file
 
     # Frames
@@ -45,9 +45,9 @@
     extrinsicRot:    [1.0,  0.0,  0.0,
                        0.0,  1.0,  0.0,
                        0.0,  0.0, 1.0 ]
-    # extrinsicRPY: [ 0.0,  -1.0,  0.0,
-    #                1.0,  0.0,  0.0,
-    #                 0.0,  0.0,  1.0 ]
+    extrinsicRPY: [ 1.0,  0.0,  0.0,
+                   0.0,  1.0,  0.0,
+                    0.0,  0.0,  1.0 ]
 
     # LOAM feature threshold
     edgeThreshold: 1.0

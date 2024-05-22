@@ -117,55 +117,55 @@ public:
         tf2::convert(t, tCur);
 
         // publish latest odometry
-        nav_msgs::msg::Odometry laserOdometry = imuOdomQueue.back();
-        laserOdometry.pose.pose.position.x = t.transform.translation.x;
-        laserOdometry.pose.pose.position.y = t.transform.translation.y;
-        laserOdometry.pose.pose.position.z = t.transform.translation.z;
-        laserOdometry.pose.pose.orientation = t.transform.rotation;
-        pubImuOdometry->publish(laserOdometry);
+        // nav_msgs::msg::Odometry laserOdometry = imuOdomQueue.back();  // Fabiano edit
+        // laserOdometry.pose.pose.position.x = t.transform.translation.x;
+        // laserOdometry.pose.pose.position.y = t.transform.translation.y;
+        // laserOdometry.pose.pose.position.z = t.transform.translation.z;
+        // laserOdometry.pose.pose.orientation = t.transform.rotation;
+        // pubImuOdometry->publish(laserOdometry);
 
         // publish tf
-        if(lidarFrame != baselinkFrame)
-        {
-            try
-            {
-                tf2::fromMsg(tfBuffer->lookupTransform(
-                    lidarFrame, baselinkFrame, rclcpp::Time(0)), lidar2Baselink);
-            }
-            catch (tf2::TransformException ex)
-            {
-                RCLCPP_ERROR(get_logger(), "%s", ex.what());
-            }
-            tf2::Stamped<tf2::Transform> tb(
-                tCur * lidar2Baselink, tf2_ros::fromMsg(odomMsg->header.stamp), odometryFrame);
-            tCur = tb;
-        }
-        geometry_msgs::msg::TransformStamped ts;
-        tf2::convert(tCur, ts);
-        ts.child_frame_id = baselinkFrame;
-        tfBroadcaster->sendTransform(ts);  // Fabiano edit
+        // if(lidarFrame != baselinkFrame)
+        // {
+        //     try
+        //     {
+        //         tf2::fromMsg(tfBuffer->lookupTransform(
+        //             lidarFrame, baselinkFrame, rclcpp::Time(0)), lidar2Baselink);
+        //     }
+        //     catch (tf2::TransformException ex)
+        //     {
+        //         RCLCPP_ERROR(get_logger(), "%s", ex.what());
+        //     }
+        //     tf2::Stamped<tf2::Transform> tb(
+        //         tCur * lidar2Baselink, tf2_ros::fromMsg(odomMsg->header.stamp), odometryFrame);
+        //     tCur = tb;
+        // }
+        // geometry_msgs::msg::TransformStamped ts;
+        // tf2::convert(tCur, ts);
+        // ts.child_frame_id = baselinkFrame;
+        // tfBroadcaster->sendTransform(ts);  // Fabiano edit
 
         // publish IMU path
-        static nav_msgs::msg::Path imuPath;
-        static double last_path_time = -1;
-        double imuTime = stamp2Sec(imuOdomQueue.back().header.stamp);
-        if (imuTime - last_path_time > 0.1)
-        {
-            last_path_time = imuTime;
-            geometry_msgs::msg::PoseStamped pose_stamped;
-            pose_stamped.header.stamp = imuOdomQueue.back().header.stamp;
-            pose_stamped.header.frame_id = odometryFrame;
-            pose_stamped.pose = laserOdometry.pose.pose;
-            imuPath.poses.push_back(pose_stamped);
-            while(!imuPath.poses.empty() && stamp2Sec(imuPath.poses.front().header.stamp) < lidarOdomTime - 1.0)
-                imuPath.poses.erase(imuPath.poses.begin());
-            if (pubImuPath->get_subscription_count() != 0)
-            {
-                imuPath.header.stamp = imuOdomQueue.back().header.stamp;
-                imuPath.header.frame_id = odometryFrame;
-                pubImuPath->publish(imuPath);
-            }
-        }
+        // static nav_msgs::msg::Path imuPath;  // Fabiano edit
+        // static double last_path_time = -1;
+        // double imuTime = stamp2Sec(imuOdomQueue.back().header.stamp);
+        // if (imuTime - last_path_time > 0.1)
+        // {
+        //     last_path_time = imuTime;
+        //     geometry_msgs::msg::PoseStamped pose_stamped;
+        //     pose_stamped.header.stamp = imuOdomQueue.back().header.stamp;
+        //     pose_stamped.header.frame_id = odometryFrame;
+        //     pose_stamped.pose = laserOdometry.pose.pose;
+        //     imuPath.poses.push_back(pose_stamped);
+        //     while(!imuPath.poses.empty() && stamp2Sec(imuPath.poses.front().header.stamp) < lidarOdomTime - 1.0)
+        //         imuPath.poses.erase(imuPath.poses.begin());
+        //     if (pubImuPath->get_subscription_count() != 0)
+        //     {
+        //         imuPath.header.stamp = imuOdomQueue.back().header.stamp;
+        //         imuPath.header.frame_id = odometryFrame;
+        //         pubImuPath->publish(imuPath);
+        //     }
+        // }
     }
 };
 
@@ -513,30 +513,30 @@ public:
         gtsam::NavState currentState = imuIntegratorImu_->predict(prevStateOdom, prevBiasOdom);
 
         // publish odometry
-        auto odometry = nav_msgs::msg::Odometry();
-        odometry.header.stamp = thisImu.header.stamp;
-        odometry.header.frame_id = odometryFrame;
-        odometry.child_frame_id = "odom_imu";
+        // auto odometry = nav_msgs::msg::Odometry();  // Fabiano edit
+        // odometry.header.stamp = thisImu.header.stamp;
+        // odometry.header.frame_id = odometryFrame;
+        // odometry.child_frame_id = "odom_imu";
 
-        // transform imu pose to ldiar
-        gtsam::Pose3 imuPose = gtsam::Pose3(currentState.quaternion(), currentState.position());
-        gtsam::Pose3 lidarPose = imuPose.compose(imu2Lidar);
+        // transform imu pose to lidar
+        // gtsam::Pose3 imuPose = gtsam::Pose3(currentState.quaternion(), currentState.position());  // Fabiano edit
+        // gtsam::Pose3 lidarPose = imuPose.compose(imu2Lidar);
 
-        odometry.pose.pose.position.x = lidarPose.translation().x();
-        odometry.pose.pose.position.y = lidarPose.translation().y();
-        odometry.pose.pose.position.z = lidarPose.translation().z();
-        odometry.pose.pose.orientation.x = lidarPose.rotation().toQuaternion().x();
-        odometry.pose.pose.orientation.y = lidarPose.rotation().toQuaternion().y();
-        odometry.pose.pose.orientation.z = lidarPose.rotation().toQuaternion().z();
-        odometry.pose.pose.orientation.w = lidarPose.rotation().toQuaternion().w();
+        // odometry.pose.pose.position.x = lidarPose.translation().x();
+        // odometry.pose.pose.position.y = lidarPose.translation().y();
+        // odometry.pose.pose.position.z = lidarPose.translation().z();
+        // odometry.pose.pose.orientation.x = lidarPose.rotation().toQuaternion().x();
+        // odometry.pose.pose.orientation.y = lidarPose.rotation().toQuaternion().y();
+        // odometry.pose.pose.orientation.z = lidarPose.rotation().toQuaternion().z();
+        // odometry.pose.pose.orientation.w = lidarPose.rotation().toQuaternion().w();
         
-        odometry.twist.twist.linear.x = currentState.velocity().x();
-        odometry.twist.twist.linear.y = currentState.velocity().y();
-        odometry.twist.twist.linear.z = currentState.velocity().z();
-        odometry.twist.twist.angular.x = thisImu.angular_velocity.x + prevBiasOdom.gyroscope().x();
-        odometry.twist.twist.angular.y = thisImu.angular_velocity.y + prevBiasOdom.gyroscope().y();
-        odometry.twist.twist.angular.z = thisImu.angular_velocity.z + prevBiasOdom.gyroscope().z();
-        pubImuOdometry->publish(odometry);
+        // odometry.twist.twist.linear.x = currentState.velocity().x();
+        // odometry.twist.twist.linear.y = currentState.velocity().y();
+        // odometry.twist.twist.linear.z = currentState.velocity().z();
+        // odometry.twist.twist.angular.x = thisImu.angular_velocity.x + prevBiasOdom.gyroscope().x();
+        // odometry.twist.twist.angular.y = thisImu.angular_velocity.y + prevBiasOdom.gyroscope().y();
+        // odometry.twist.twist.angular.z = thisImu.angular_velocity.z + prevBiasOdom.gyroscope().z();
+        // pubImuOdometry->publish(odometry);
     }
 };
 
